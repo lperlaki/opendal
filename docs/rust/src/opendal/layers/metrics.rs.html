@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `core/src/layers/metrics.rs`."><title>metrics.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="opendal" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.1 (a28077b28 2023-12-04)" data-channel="1.74.1" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../opendal/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/layers/metrics.rs`."><title>metrics.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-bf502f66ec635d5d.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="opendal" data-themes="" data-resource-suffix="" data-rustdoc-version="1.77.0-nightly (e51e98dde 2023-12-31)" data-channel="nightly" data-search-js="search-c17e98913a53b3b7.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-f2adc0d6ca4d09fb.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0b2e2def73e61cbe.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+            <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
+    <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../opendal/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -842,87 +844,30 @@
 <a href="#842" id="842">842</a>
 <a href="#843" id="843">843</a>
 <a href="#844" id="844">844</a>
-<a href="#845" id="845">845</a>
-<a href="#846" id="846">846</a>
-<a href="#847" id="847">847</a>
-<a href="#848" id="848">848</a>
-<a href="#849" id="849">849</a>
-<a href="#850" id="850">850</a>
-<a href="#851" id="851">851</a>
-<a href="#852" id="852">852</a>
-<a href="#853" id="853">853</a>
-<a href="#854" id="854">854</a>
-<a href="#855" id="855">855</a>
-<a href="#856" id="856">856</a>
-<a href="#857" id="857">857</a>
-<a href="#858" id="858">858</a>
-<a href="#859" id="859">859</a>
-<a href="#860" id="860">860</a>
-<a href="#861" id="861">861</a>
-<a href="#862" id="862">862</a>
-<a href="#863" id="863">863</a>
-<a href="#864" id="864">864</a>
-<a href="#865" id="865">865</a>
-<a href="#866" id="866">866</a>
-<a href="#867" id="867">867</a>
-<a href="#868" id="868">868</a>
-<a href="#869" id="869">869</a>
-<a href="#870" id="870">870</a>
-<a href="#871" id="871">871</a>
-<a href="#872" id="872">872</a>
-<a href="#873" id="873">873</a>
-<a href="#874" id="874">874</a>
-<a href="#875" id="875">875</a>
-<a href="#876" id="876">876</a>
-<a href="#877" id="877">877</a>
-<a href="#878" id="878">878</a>
-<a href="#879" id="879">879</a>
-<a href="#880" id="880">880</a>
-<a href="#881" id="881">881</a>
-<a href="#882" id="882">882</a>
-<a href="#883" id="883">883</a>
-<a href="#884" id="884">884</a>
-<a href="#885" id="885">885</a>
-<a href="#886" id="886">886</a>
-<a href="#887" id="887">887</a>
-<a href="#888" id="888">888</a>
-<a href="#889" id="889">889</a>
-<a href="#890" id="890">890</a>
-<a href="#891" id="891">891</a>
-<a href="#892" id="892">892</a>
-<a href="#893" id="893">893</a>
-<a href="#894" id="894">894</a>
-<a href="#895" id="895">895</a>
-<a href="#896" id="896">896</a>
-<a href="#897" id="897">897</a>
-<a href="#898" id="898">898</a>
 </pre></div><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
 // regarding copyright ownership.  The ASF licenses this file
 // to you under the Apache License, Version 2.0 (the
-// &quot;License&quot;); you may not use this file except in compliance
+// "License"); you may not use this file except in compliance
 // with the License.  You may obtain a copy of the License at
 //
 //   http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing,
 // software distributed under the License is distributed on an
-// &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
 
 </span><span class="kw">use </span>std::fmt::Debug;
 <span class="kw">use </span>std::fmt::Formatter;
-<span class="kw">use </span>std::io;
 <span class="kw">use </span>std::sync::Arc;
-<span class="kw">use </span>std::task::Context;
-<span class="kw">use </span>std::task::Poll;
 <span class="kw">use </span>std::time::Instant;
 
 <span class="kw">use </span>async_trait::async_trait;
-<span class="kw">use </span>bytes::Bytes;
+<span class="kw">use </span>bytes::Buf;
 <span class="kw">use </span>futures::FutureExt;
 <span class="kw">use </span>futures::TryFutureExt;
 <span class="kw">use </span>metrics::increment_counter;
@@ -935,7 +880,7 @@
 <span class="kw">use crate</span>::<span class="kw-2">*</span>;
 
 <span class="doccomment">/// requests_total records all successful requests sent via operator.
-</span><span class="kw">static </span>METRIC_REQUESTS_TOTAL: <span class="kw-2">&amp;</span>str = <span class="string">&quot;opendal_requests_total&quot;</span>;
+</span><span class="kw">static </span>METRIC_REQUESTS_TOTAL: <span class="kw-2">&amp;</span>str = <span class="string">"opendal_requests_total"</span>;
 <span class="doccomment">/// requests_duration_seconds records the duration seconds of successful
 /// requests.
 ///
@@ -947,17 +892,17 @@
 /// - Sending request
 /// - Receiving response
 /// - Consuming response
-</span><span class="kw">static </span>METRIC_REQUESTS_DURATION_SECONDS: <span class="kw-2">&amp;</span>str = <span class="string">&quot;opendal_requests_duration_seconds&quot;</span>;
-<span class="kw">static </span>METRICS_ERRORS_TOTAL: <span class="kw-2">&amp;</span>str = <span class="string">&quot;opendal_errors_total&quot;</span>;
+</span><span class="kw">static </span>METRIC_REQUESTS_DURATION_SECONDS: <span class="kw-2">&amp;</span>str = <span class="string">"opendal_requests_duration_seconds"</span>;
+<span class="kw">static </span>METRICS_ERRORS_TOTAL: <span class="kw-2">&amp;</span>str = <span class="string">"opendal_errors_total"</span>;
 <span class="doccomment">/// bytes_total records all bytes processed by operator.
-</span><span class="kw">static </span>METRIC_BYTES_TOTAL: <span class="kw-2">&amp;</span>str = <span class="string">&quot;opendal_bytes_total&quot;</span>;
+</span><span class="kw">static </span>METRIC_BYTES_TOTAL: <span class="kw-2">&amp;</span>str = <span class="string">"opendal_bytes_total"</span>;
 
 <span class="doccomment">/// The scheme of the service.
-</span><span class="kw">static </span>LABEL_SERVICE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;service&quot;</span>;
+</span><span class="kw">static </span>LABEL_SERVICE: <span class="kw-2">&amp;</span>str = <span class="string">"service"</span>;
 <span class="doccomment">/// The operation of this request.
-</span><span class="kw">static </span>LABEL_OPERATION: <span class="kw-2">&amp;</span>str = <span class="string">&quot;operation&quot;</span>;
+</span><span class="kw">static </span>LABEL_OPERATION: <span class="kw-2">&amp;</span>str = <span class="string">"operation"</span>;
 <span class="doccomment">/// The error kind of this failed request.
-</span><span class="kw">static </span>LABEL_ERROR: <span class="kw-2">&amp;</span>str = <span class="string">&quot;error&quot;</span>;
+</span><span class="kw">static </span>LABEL_ERROR: <span class="kw-2">&amp;</span>str = <span class="string">"error"</span>;
 
 <span class="doccomment">/// Add [metrics](https://docs.rs/metrics/) for every operations.
 ///
@@ -984,14 +929,14 @@
 ///
 /// # Examples
 ///
-/// ```
+/// ```no_run
 /// use anyhow::Result;
 /// use opendal::layers::MetricsLayer;
 /// use opendal::services;
 /// use opendal::Operator;
 ///
 /// let _ = Operator::new(services::Memory::default())
-///     .expect(&quot;must init&quot;)
+///     .expect("must init")
 ///     .layer(MetricsLayer)
 ///     .finish();
 /// ```
@@ -1006,10 +951,10 @@
 ///
 /// ```ignore
 /// let builder = PrometheusBuilder::new();
-/// builder.install().expect(&quot;failed to install recorder/exporter&quot;);
-/// let handle = builder.install_recorder().expect(&quot;failed to install recorder&quot;);
-/// let (recorder, exporter) = builder.build().expect(&quot;failed to build recorder/exporter&quot;);
-/// let recorder = builder.build_recorder().expect(&quot;failed to build recorder&quot;);
+/// builder.install().expect("failed to install recorder/exporter");
+/// let handle = builder.install_recorder().expect("failed to install recorder");
+/// let (recorder, exporter) = builder.build().expect("failed to build recorder/exporter");
+/// let recorder = builder.build_recorder().expect("failed to build recorder");
 /// ```
 </span><span class="attr">#[derive(Debug, Copy, Clone)]
 </span><span class="kw">pub struct </span>MetricsLayer;
@@ -1032,7 +977,7 @@
 /// By holding all metrics handlers we needed, we can reduce the lock
 /// cost on fetching them. All metrics update will be atomic operations.
 </span><span class="kw">struct </span>MetricsHandler {
-    service: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+    service: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
 
     requests_total_metadata: Counter,
     requests_duration_seconds_metadata: Histogram,
@@ -1086,7 +1031,7 @@
 }
 
 <span class="kw">impl </span>MetricsHandler {
-    <span class="kw">fn </span>new(service: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) -&gt; <span class="self">Self </span>{
+    <span class="kw">fn </span>new(service: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             service,
 
@@ -1296,14 +1241,15 @@
 }
 
 <span class="kw">impl</span>&lt;A: Accessor&gt; Debug <span class="kw">for </span>MetricsAccessor&lt;A&gt; {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        f.debug_struct(<span class="string">&quot;MetricsAccessor&quot;</span>)
-            .field(<span class="string">&quot;inner&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.inner)
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        f.debug_struct(<span class="string">"MetricsAccessor"</span>)
+            .field(<span class="string">"inner"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.inner)
             .finish_non_exhaustive()
     }
 }
 
-<span class="attr">#[async_trait]
+<span class="attr">#[cfg_attr(not(target_arch = <span class="string">"wasm32"</span>), async_trait)]
+#[cfg_attr(target_arch = <span class="string">"wasm32"</span>, async_trait(<span class="question-mark">?</span>Send))]
 </span><span class="kw">impl</span>&lt;A: Accessor&gt; LayeredAccessor <span class="kw">for </span>MetricsAccessor&lt;A&gt; {
     <span class="kw">type </span>Inner = A;
     <span class="kw">type </span>Reader = MetricWrapper&lt;A::Reader&gt;;
@@ -1353,7 +1299,7 @@
     <span class="kw">async fn </span>read(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpRead) -&gt; <span class="prelude-ty">Result</span>&lt;(RpRead, <span class="self">Self</span>::Reader)&gt; {
         <span class="self">self</span>.handle.requests_total_read.increment(<span class="number">1</span>);
 
-        <span class="kw">let </span>start = Instant::now();
+        <span class="kw">let </span>_start = Instant::now();
 
         <span class="self">self</span>.inner
             .read(path, args)
@@ -1367,7 +1313,6 @@
                             <span class="self">self</span>.handle.clone(),
                             <span class="self">self</span>.handle.bytes_total_read.clone(),
                             <span class="self">self</span>.handle.requests_duration_seconds_read.clone(),
-                            <span class="prelude-val">Some</span>(start),
                         ),
                     )
                 })
@@ -1383,7 +1328,7 @@
     <span class="kw">async fn </span>write(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpWrite) -&gt; <span class="prelude-ty">Result</span>&lt;(RpWrite, <span class="self">Self</span>::Writer)&gt; {
         <span class="self">self</span>.handle.requests_total_write.increment(<span class="number">1</span>);
 
-        <span class="kw">let </span>start = Instant::now();
+        <span class="kw">let </span>_start = Instant::now();
 
         <span class="self">self</span>.inner
             .write(path, args)
@@ -1396,7 +1341,6 @@
                         <span class="self">self</span>.handle.clone(),
                         <span class="self">self</span>.handle.bytes_total_write.clone(),
                         <span class="self">self</span>.handle.requests_duration_seconds_write.clone(),
-                        <span class="prelude-val">Some</span>(start),
                     ),
                 )
             })
@@ -1517,7 +1461,7 @@
     <span class="kw">fn </span>blocking_read(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, args: OpRead) -&gt; <span class="prelude-ty">Result</span>&lt;(RpRead, <span class="self">Self</span>::BlockingReader)&gt; {
         <span class="self">self</span>.handle.requests_total_blocking_read.increment(<span class="number">1</span>);
 
-        <span class="kw">let </span>start = Instant::now();
+        <span class="kw">let </span>_start = Instant::now();
         <span class="kw">let </span>result = <span class="self">self</span>.inner.blocking_read(path, args).map(|(rp, r)| {
             (
                 rp,
@@ -1527,7 +1471,6 @@
                     <span class="self">self</span>.handle.clone(),
                     <span class="self">self</span>.handle.bytes_total_blocking_read.clone(),
                     <span class="self">self</span>.handle.requests_duration_seconds_blocking_read.clone(),
-                    <span class="prelude-val">Some</span>(start),
                 ),
             )
         });
@@ -1560,7 +1503,6 @@
                         <span class="self">self</span>.handle.clone(),
                         <span class="self">self</span>.handle.bytes_total_write.clone(),
                         <span class="self">self</span>.handle.requests_duration_seconds_write.clone(),
-                        <span class="prelude-val">Some</span>(start),
                     ),
                 )
             })
@@ -1633,9 +1575,6 @@
     bytes_counter: Counter,
     requests_duration_seconds: Histogram,
     handle: Arc&lt;MetricsHandler&gt;,
-
-    start: <span class="prelude-ty">Option</span>&lt;Instant&gt;,
-    bytes: u64,
 }
 
 <span class="kw">impl</span>&lt;R&gt; MetricWrapper&lt;R&gt; {
@@ -1645,7 +1584,6 @@
         handle: Arc&lt;MetricsHandler&gt;,
         bytes_counter: Counter,
         requests_duration_seconds: Histogram,
-        start: <span class="prelude-ty">Option</span>&lt;Instant&gt;,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             inner,
@@ -1653,103 +1591,59 @@
             handle,
             bytes_counter,
             requests_duration_seconds,
-            start,
-            bytes: <span class="number">0</span>,
-        }
-    }
-}
-
-<span class="kw">impl</span>&lt;R&gt; Drop <span class="kw">for </span>MetricWrapper&lt;R&gt; {
-    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="self">self</span>.bytes_counter.increment(<span class="self">self</span>.bytes);
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(instant) = <span class="self">self</span>.start {
-            <span class="kw">let </span>dur = instant.elapsed().as_secs_f64();
-            <span class="self">self</span>.requests_duration_seconds.record(dur);
         }
     }
 }
 
 <span class="kw">impl</span>&lt;R: oio::Read&gt; oio::Read <span class="kw">for </span>MetricWrapper&lt;R&gt; {
-    <span class="kw">fn </span>poll_read(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;, buf: <span class="kw-2">&amp;mut </span>[u8]) -&gt; Poll&lt;<span class="prelude-ty">Result</span>&lt;usize&gt;&gt; {
-        <span class="self">self</span>.inner.poll_read(cx, buf).map(|res| <span class="kw">match </span>res {
-            <span class="prelude-val">Ok</span>(bytes) =&gt; {
-                <span class="self">self</span>.bytes += bytes <span class="kw">as </span>u64;
-                <span class="prelude-val">Ok</span>(bytes)
+    <span class="kw">async fn </span>read_at(<span class="kw-2">&amp;</span><span class="self">self</span>, offset: u64, limit: usize) -&gt; <span class="prelude-ty">Result</span>&lt;Buffer&gt; {
+        <span class="kw">let </span>start = Instant::now();
+
+        <span class="kw">match </span><span class="self">self</span>.inner.read_at(offset, limit).<span class="kw">await </span>{
+            <span class="prelude-val">Ok</span>(bs) =&gt; {
+                <span class="self">self</span>.bytes_counter.increment(bs.remaining() <span class="kw">as </span>u64);
+                <span class="self">self</span>.requests_duration_seconds
+                    .record(start.elapsed().as_secs_f64());
+                <span class="prelude-val">Ok</span>(bs)
             }
             <span class="prelude-val">Err</span>(e) =&gt; {
                 <span class="self">self</span>.handle.increment_errors_total(<span class="self">self</span>.op, e.kind());
                 <span class="prelude-val">Err</span>(e)
             }
-        })
-    }
-
-    <span class="kw">fn </span>poll_seek(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;, pos: io::SeekFrom) -&gt; Poll&lt;<span class="prelude-ty">Result</span>&lt;u64&gt;&gt; {
-        <span class="self">self</span>.inner.poll_seek(cx, pos).map(|res| <span class="kw">match </span>res {
-            <span class="prelude-val">Ok</span>(n) =&gt; <span class="prelude-val">Ok</span>(n),
-            <span class="prelude-val">Err</span>(e) =&gt; {
-                <span class="self">self</span>.handle.increment_errors_total(<span class="self">self</span>.op, e.kind());
-                <span class="prelude-val">Err</span>(e)
-            }
-        })
-    }
-
-    <span class="kw">fn </span>poll_next(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="prelude-ty">Result</span>&lt;Bytes&gt;&gt;&gt; {
-        <span class="self">self</span>.inner.poll_next(cx).map(|res| <span class="kw">match </span>res {
-            <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(bytes)) =&gt; {
-                <span class="self">self</span>.bytes += bytes.len() <span class="kw">as </span>u64;
-                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(bytes))
-            }
-            <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(e)) =&gt; {
-                <span class="self">self</span>.handle.increment_errors_total(<span class="self">self</span>.op, e.kind());
-                <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(e))
-            }
-            <span class="prelude-val">None </span>=&gt; <span class="prelude-val">None</span>,
-        })
+        }
     }
 }
 
 <span class="kw">impl</span>&lt;R: oio::BlockingRead&gt; oio::BlockingRead <span class="kw">for </span>MetricWrapper&lt;R&gt; {
-    <span class="kw">fn </span>read(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;usize&gt; {
+    <span class="kw">fn </span>read_at(<span class="kw-2">&amp;</span><span class="self">self</span>, offset: u64, limit: usize) -&gt; <span class="prelude-ty">Result</span>&lt;Buffer&gt; {
+        <span class="kw">let </span>start = Instant::now();
+
         <span class="self">self</span>.inner
-            .read(buf)
-            .map(|n| {
-                <span class="self">self</span>.bytes += n <span class="kw">as </span>u64;
-                n
+            .read_at(offset, limit)
+            .map(|bs| {
+                <span class="self">self</span>.bytes_counter.increment(bs.remaining() <span class="kw">as </span>u64);
+                <span class="self">self</span>.requests_duration_seconds
+                    .record(start.elapsed().as_secs_f64());
+                bs
             })
             .map_err(|e| {
                 <span class="self">self</span>.handle.increment_errors_total(<span class="self">self</span>.op, e.kind());
                 e
             })
     }
-
-    <span class="kw">fn </span>seek(<span class="kw-2">&amp;mut </span><span class="self">self</span>, pos: io::SeekFrom) -&gt; <span class="prelude-ty">Result</span>&lt;u64&gt; {
-        <span class="self">self</span>.inner.seek(pos).map_err(|err| {
-            <span class="self">self</span>.handle.increment_errors_total(<span class="self">self</span>.op, err.kind());
-            err
-        })
-    }
-
-    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="prelude-ty">Result</span>&lt;Bytes&gt;&gt; {
-        <span class="self">self</span>.inner.next().map(|res| <span class="kw">match </span>res {
-            <span class="prelude-val">Ok</span>(bytes) =&gt; {
-                <span class="self">self</span>.bytes += bytes.len() <span class="kw">as </span>u64;
-                <span class="prelude-val">Ok</span>(bytes)
-            }
-            <span class="prelude-val">Err</span>(e) =&gt; {
-                <span class="self">self</span>.handle.increment_errors_total(<span class="self">self</span>.op, e.kind());
-                <span class="prelude-val">Err</span>(e)
-            }
-        })
-    }
 }
 
-<span class="attr">#[async_trait]
-</span><span class="kw">impl</span>&lt;R: oio::Write&gt; oio::Write <span class="kw">for </span>MetricWrapper&lt;R&gt; {
-    <span class="kw">fn </span>poll_write(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;, bs: <span class="kw-2">&amp;</span><span class="kw">dyn </span>oio::WriteBuf) -&gt; Poll&lt;<span class="prelude-ty">Result</span>&lt;usize&gt;&gt; {
+<span class="kw">impl</span>&lt;R: oio::Write&gt; oio::Write <span class="kw">for </span>MetricWrapper&lt;R&gt; {
+    <span class="kw">async fn </span>write(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bs: Buffer) -&gt; <span class="prelude-ty">Result</span>&lt;usize&gt; {
+        <span class="kw">let </span>start = Instant::now();
+
         <span class="self">self</span>.inner
-            .poll_write(cx, bs)
-            .map_ok(|n| {
-                <span class="self">self</span>.bytes += n <span class="kw">as </span>u64;
+            .write(bs)
+            .<span class="kw">await
+            </span>.map(|n| {
+                <span class="self">self</span>.bytes_counter.increment(n <span class="kw">as </span>u64);
+                <span class="self">self</span>.requests_duration_seconds
+                    .record(start.elapsed().as_secs_f64());
                 n
             })
             .map_err(|err| {
@@ -1758,15 +1652,15 @@
             })
     }
 
-    <span class="kw">fn </span>poll_abort(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Result</span>&lt;()&gt;&gt; {
-        <span class="self">self</span>.inner.poll_abort(cx).map_err(|err| {
+    <span class="kw">async fn </span>abort(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="self">self</span>.inner.abort().<span class="kw">await</span>.map_err(|err| {
             <span class="self">self</span>.handle.increment_errors_total(<span class="self">self</span>.op, err.kind());
             err
         })
     }
 
-    <span class="kw">fn </span>poll_close(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Result</span>&lt;()&gt;&gt; {
-        <span class="self">self</span>.inner.poll_close(cx).map_err(|err| {
+    <span class="kw">async fn </span>close(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="self">self</span>.inner.close().<span class="kw">await</span>.map_err(|err| {
             <span class="self">self</span>.handle.increment_errors_total(<span class="self">self</span>.op, err.kind());
             err
         })
@@ -1774,11 +1668,11 @@
 }
 
 <span class="kw">impl</span>&lt;R: oio::BlockingWrite&gt; oio::BlockingWrite <span class="kw">for </span>MetricWrapper&lt;R&gt; {
-    <span class="kw">fn </span>write(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bs: <span class="kw-2">&amp;</span><span class="kw">dyn </span>oio::WriteBuf) -&gt; <span class="prelude-ty">Result</span>&lt;usize&gt; {
+    <span class="kw">fn </span>write(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bs: Buffer) -&gt; <span class="prelude-ty">Result</span>&lt;usize&gt; {
         <span class="self">self</span>.inner
             .write(bs)
             .map(|n| {
-                <span class="self">self</span>.bytes += n <span class="kw">as </span>u64;
+                <span class="self">self</span>.bytes_counter.increment(n <span class="kw">as </span>u64);
                 n
             })
             .map_err(|err| {
